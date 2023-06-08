@@ -29,7 +29,7 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@v1
         with:
           projectBaseDir: .
-          token: ${{ secrets.SONARQUBE_TOKEN }}
+          token: sqa_20c39dd70fde66d7227a050691b148ba3a6abc22 
           waitForQualityGate: true
 
       - name: Run OWASP Dependency Check
