@@ -39,6 +39,7 @@ jobs:
         with:
           projectBaseDir: .
           token: sqa_20c39dd70fde66d7227a050691b148ba3a6abc22 
+          url: https://sonarqube.swiveltech.lk
           waitForQualityGate: true
 
       - name: Run OWASP Dependency Check
