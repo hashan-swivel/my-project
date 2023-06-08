@@ -1,0 +1,60 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-java:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 1.8
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Set up SonarQube
+        uses: sonarsource/sonarqube-scan-action@v1
+        with:
+          projectBaseDir: .
+          token: sqa_20c39dd70fde66d7227a050691b148ba3a6abc22 
+          waitForQualityGate: true
+
+      - name: Run OWASP Dependency Check
+        run: |
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.4.0/dependency-check-6.4.0-release.zip
+          unzip dependency-check-6.4.0-release.zip
+          cd dependency-check/bin
+          ./dependency-check.sh --scan ./my-project --format "HTML" --project my-project --out . --log dependency-check-log.txt
+
+      - name: Upload OWASP Dependency Check report
+        uses: actions/upload-artifact@v2
+        with:
+          name: dependency-check-report
+          path: dependency-check/bin
+
+      - name: Download SonarQube Scanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip sonar-scanner-cli-4.6.2.2472-linux.zip
+
+      - name: Analyze with SonarQube Scanner
+        run: ./sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner
+
+      - name: Upload SonarQube analysis report
+        uses: actions/upload-artifact@v2
+        with:
+          name: sonarqube-report
+          path: .scannerwork/report-task.txt
